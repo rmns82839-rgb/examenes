@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motorizado Lab - Guía Rápida 🧪</title>
+    <style>
+        /* Paleta: #333 (Negro Motorizado), #FFC107 (Amarillo de Seguridad), #F4F4F9 (Fondo claro) */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0; 
+            padding: 20px 10px; 
+            background-color: #f4f4f9;
+        }
+        #container {
+            width: 100%;
+            max-width: 900px; 
+            margin: auto;
+            background: white;
+            padding: 20px; 
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+            margin-top: 60px; /* Deja espacio para el botón fijo */
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            text-transform: uppercase;
+            border-bottom: 3px solid #FFC107;
+            padding-bottom: 10px;
+        }
+        p {
+            text-align: center;
+            color: #555;
+            margin-bottom: 25px;
+        }
+        
+        /* --- ESTILOS DEL BOTÓN SUPERIOR FIJO Y LLAMATIVO --- */
+        .back-button {
+            position: fixed; 
+            top: 15px;
+            left: 50%; /* Centrado horizontalmente */
+            transform: translateX(-50%); /* Ajuste para centrar */
+            z-index: 1000; 
+            background-color: #333; /* Color de base */
+            color: #FFC107; /* Color de impacto */
+            padding: 10px 20px; 
+            border: 2px solid #FFC107; /* Borde de seguridad */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em; 
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: background-color 0.2s ease, transform 0.1s;
+        }
+        .back-button:hover {
+            background-color: #555;
+            transform: translateX(-50%) scale(1.02); /* Efecto ligero de crecimiento */
+        }
+
+        /* --- ESTILOS DE BÚSQUEDA --- */
+        .search-container {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .search-container input {
+            padding: 12px; 
+            width: 90%; 
+            border: 2px solid #333; 
+            border-radius: 5px;
+            font-size: 1em;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        /* --- ESTILOS DEL ACORDEÓN --- */
+        .tube-group {
+            margin-bottom: 10px; 
+            border-radius: 8px;
+            overflow: hidden; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .tube-header {
+            font-weight: bold;
+            font-size: 1.1em; 
+            padding: 15px;
+            cursor: pointer; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+            border-left: 6px solid; /* Borde más grueso para impacto */
+        }
+        .tube-header::after {
+            content: '▼'; /* Nuevo indicador más "táctico" */
+            font-size: 0.8em; 
+            color: #FFC107;
+            transition: transform 0.3s;
+        }
+        .tube-group.active .tube-header::after {
+            transform: rotate(180deg); 
+        }
+        .exam-list {
+            list-style: none; 
+            padding: 10px;
+            margin: 0;
+            display: none; 
+            background-color: #ffffff; 
+            border-top: 1px solid #ddd;
+            grid-template-columns: 1fr; 
+            gap: 5px; 
+        }
+        .tube-group.active .exam-list {
+            display: grid; 
+        }
+        .exam-item {
+            padding: 8px;
+            font-size: 0.85em; 
+            border-left: 3px solid #333; /* Borde pequeño */
+            background-color: #f9f9f9;
+        }
+        .exam-item::before {
+            content: "•"; 
+            color: #FFC107; /* Viñeta amarilla */
+            font-weight: bold;
+        }
+
+        /* MEDIA QUERY para Desktop (Mantiene responsive) */
+        @media (min-width: 600px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            .exam-list {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            }
+            .back-button {
+                top: 20px;
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+
+        /* --- COLORES DE TUBOS/MUESTRAS (Aplicados al tube-header) --- */
+        .tube-group.yellow .tube-header { background-color: #fffacd; border-color: #FFC107; } 
+        .tube-group.lila .tube-header { background-color: #e0b0ff; border-color: #8e2de2; } 
+        .tube-group.celeste .tube-header { background-color: #e0f2f7; border-color: #00b0ff; } 
+        .tube-group.red .tube-header { background-color: #ffe0e0; border-color: #dc3545; } 
+        .tube-group.green .tube-header { background-color: #e6ffe6; border-color: #28a745; } 
+        .tube-group.gray .tube-header { background-color: #f0f0f0; border-color: #6c757d; } 
+        .tube-group.dark-blue .tube-header { background-color: #e6e6ff; border-color: #36454F; } 
+        .tube-group.fecal .tube-header { background-color: #f0e68c; border-color: #996515; } 
+        .tube-group.urine .tube-header { background-color: #ccf2ff; border-color: #0077c2; } 
+        .tube-group.saliva .tube-header { background-color: #fff0f5; border-color: #ff69b4; } 
+        .tube-group.other .tube-header { background-color: #e3e3e3; border-color: #333333; } 
+    </style>
+</head>
+<body>
+
+    <button class="back-button" onclick="window.location.href='index.html'">VOLVER A PÁGINA PRINCIPAL</button>
+
+    <div id="container">
+        <h1>GUÍA RÁPIDA DE MUESTRAS</h1>
+        <p>Referencia táctica de tubos y tipos de muestra.</p>
+
+        <div class="search-container">
+            <input type="text" id="examSearch" placeholder="BUSCAR EXAMEN RÁPIDAMENTE..." onkeyup="filterExams()">
+        </div>
+
+        <div id="examensList">
+            </div>
+
+    </div>
+
+    <script>
+        // ** LISTA CENTRALIZADA DE EXÁMENES POR TUBO / TIPO DE MUESTRA **
+        const EXAMENES_DATA = {
+            "Tubo Amarillo: Unidad Química, Hormonas, Serología": [
+                "A. Único suero", "Albumina", "Proteinas totales", "Calcio en suero", "Fosforo en suero", 
+                "Creatina Cinasa (CK)", "CK-MB (Fracción Miocárdica)", "Bilirrubina total", "Bilirrubina directa", 
+                "Transaminasa GOT (SGOT / AST)", "Transaminasa GPT (SGPT / ALT)", "Fosfatasas Alcalinas (FA)", 
+                "Colesterol total", "Trigliceridos", "Creatinina en suero", "Nitrógeno Ureico (N. Ureico / BUN)", 
+                "Deshidrogenasa Láctica (LDH)", "Glucosa en ayunas (Alternativa)", "Glucosa Curva Tolerancia", 
+                "Proteina C Reactiva (PCR / Proteína C)", "Inmunoglobulina A (IgA)", "Inmunoglobulina G (IgG)", 
+                "Inmunoglobulina M (IgM)", "Factor Reumatoideo (FR)", "Componente C3 del Complemento", 
+                "Componente C4 del Complemento", "Sodio en suero (Na)", "Potasio en suero (K)", "Cloro en suero (Cl)", 
+                "Urea", "Ácido Úrico", "Magnesio", "Hormona Estimulante del Tiroides (TSH)", 
+                "Tiroxina Libre (T4 Libre)", "Antígeno Prostático Específico (PSA)", "VIH / Serología"
+            ],
+            "Tubo Rojo (Seco): Bioquímica General, Serología Rápida": [
+                "Bioquímica General (Alternativa sin Gel)", "Serología sin Gel", "Drogas Terapéuticas (Sin Gel Separador)",
+                "Fenitoína", "Valproico"
+            ],
+            "Tubo Lila (EDTA): Hematología": [
+                "Perfil Hematologico", "Hemograma (CH / Cuadro Hemático)", "Recuento de Plaquetas", "Recuento Reticulocitos", 
+                "Velocidad de Sedimentación Globular (VSG)", "Grupos Sanguíneos (ABO/Rh)", 
+                "Hemoglobina Glicosilada (HbA1c)", "Sangre Total para PCR/Análisis Molecular"
+            ],
+            "Tubo Celeste (Citrato): Coagulación": [
+                "Tiempo de Protrombina (TP)", "Tiempo de Tromboplastina Parcial Activada (TTPK / APTT)", 
+                "Fibrinógeno", "Razón Normalizada Internacional (INR)", "Dimero D"
+            ],
+            "Tubo Verde (Heparina): Bioquímica de Emergencia, Gases": [
+                "Gases Arteriales", "Gases Venosos", "Amonio (con hielo)", "Bioquímica de Urgencia"
+            ],
+            "Tubo Gris (Fluoruro): Glucosa, Lactato": [
+                "Glucosa en Ayunas", "Glucosa Post-Carga (Curvas)", "Lactato (Ácido Láctico)", "Alcohol en Sangre"
+            ],
+            "Tubo Azul Oscuro/Marrón (Libre de Traza): Metales Pesados": [
+                "Plomo en Sangre (Pb)", "Cobre (Cu)", "Zinc (Zn)", "Aluminio (Al)", "Otros Metales Pesados"
+            ],
+            // --- MUESTRAS NO SANGUÍNEAS ---
+            "Muestra de Orina (Recipiente Estéril) 🔬": [
+                "Uroanálisis (ORIN / Parcial de Orina)", "Urocultivo", "Creatinina en Orina (24h)",
+                "Microalbuminuria", "Electrolitos en Orina (Na, K, Cl)", "Cocaína y otros Drogas de Abuso"
+            ],
+            "Muestra de Materia Fecal (Recipiente Limpio) 💩": [
+                "Coprológico (COPR)", "Coproparasitoscópico (CPS)", "Sangre Oculta en Heces (SOH)",
+                "Cultivo de Heces (Coprocultivo)", "Antígeno de Helicobacter Pylori (H. Pylori)"
+            ],
+            "Muestra de Saliva (Tubos/Hisopos Especiales) 💧": [
+                "Cortisol Salival (Curva)", "Pruebas de ADN (Genética)", "Pruebas de Drogas de Abuso",
+                "Estudio de Hormonas Sexuales"
+            ],
+            "Otros Fluidos y Muestras Biológicas (Recipientes Varios)": [
+                "Líquido Cefalorraquídeo (LCR)", "Líquido Sinovial (Articulaciones)",
+                "Exudados Faríngeos/Nasales (Cultivos, PCR)", "Biopsias y Tejidos (Patología)"
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', renderExams);
+
+        function renderExams() {
+            const examensListDiv = document.getElementById('examensList');
+            examensListDiv.innerHTML = ''; 
+
+            for (const tubeType in EXAMENES_DATA) {
+                const exams = EXAMENES_DATA[tubeType];
+                if (exams.length === 0) continue; 
+
+                const tubeGroup = document.createElement('div');
+                tubeGroup.className = 'tube-group';
+                
+                // 1. ASIGNAR CLASE DE COLOR
+                const tubeClass = tubeType.toLowerCase().includes('amarillo') ? 'yellow' :
+                                  tubeType.toLowerCase().includes('rojo') ? 'red' :
+                                  tubeType.toLowerCase().includes('lila') ? 'lila' :
+                                  tubeType.toLowerCase().includes('celeste') ? 'celeste' :
+                                  tubeType.toLowerCase().includes('verde') ? 'green' :
+                                  tubeType.toLowerCase().includes('gris') ? 'gray' :
+                                  tubeType.toLowerCase().includes('azul oscuro') ? 'dark-blue' :
+                                  tubeType.toLowerCase().includes('materia fecal') ? 'fecal' :
+                                  tubeType.toLowerCase().includes('orina') ? 'urine' :
+                                  tubeType.toLowerCase().includes('saliva') ? 'saliva' : 'other';
+                tubeGroup.classList.add(tubeClass);
+
+                // 2. CREAR ENCABEZADO CLICKABLE (ACORDEÓN)
+                const tubeHeader = document.createElement('h2');
+                tubeHeader.className = 'tube-header';
+                tubeHeader.textContent = tubeType;
+                tubeHeader.addEventListener('click', toggleAccordion); 
+                tubeGroup.appendChild(tubeHeader);
+
+                // 3. CREAR LISTA DE EXÁMENES (OCULTA)
+                const ul = document.createElement('ul');
+                ul.className = 'exam-list';
+                
+                exams.sort().forEach(exam => { 
+                    const li = document.createElement('li');
+                    li.className = 'exam-item';
+                    li.textContent = exam;
+                    ul.appendChild(li);
+                });
+
+                tubeGroup.appendChild(ul);
+                examensListDiv.appendChild(tubeGroup);
+            }
+        }
+        
+        function toggleAccordion(event) {
+            const group = event.currentTarget.closest('.tube-group'); 
+            if (!document.getElementById('examSearch').value.trim()) {
+                group.classList.toggle('active');
+            }
+        }
+
+        function filterExams() {
+            const searchTerm = document.getElementById('examSearch').value.toLowerCase();
+            const tubeGroups = document.querySelectorAll('.tube-group');
+            
+            if (searchTerm.length > 0) {
+                // MODO BÚSQUEDA: expande solo los grupos con resultados
+                tubeGroups.forEach(group => {
+                    let anyExamVisible = false;
+                    const examsInGroup = group.querySelectorAll('.exam-item');
+
+                    examsInGroup.forEach(item => {
+                        const examText = item.textContent.toLowerCase();
+                        if (examText.includes(searchTerm)) {
+                            item.style.display = 'flex'; 
+                            anyExamVisible = true;
+                        } else {
+                            item.style.display = 'none'; 
+                        }
+                    });
+
+                    // Mostrar/Ocultar el grupo y forzar la expansión
+                    if (anyExamVisible) {
+                        group.style.display = 'block';
+                        group.classList.add('active'); 
+                    } else {
+                        group.style.display = 'none';
+                        group.classList.remove('active');
+                    }
+                });
+            } else {
+                // MODO VISTA NORMAL: colapsa todos
+                tubeGroups.forEach(group => {
+                    group.style.display = 'block';
+                    group.classList.remove('active'); // Colapsar por defecto
+                    group.querySelectorAll('.exam-item').forEach(item => {
+                        item.style.display = 'flex'; // Mostrar todos los ítems
+                    });
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
