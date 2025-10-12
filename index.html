@@ -17,6 +17,7 @@
             width: 100%;
             max-width: 900px; 
             margin: auto;
+            margin-top: 60px;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -151,9 +152,43 @@
                 font-size: 1.1em;
             }
         }
+        /* --- ESTILOS DEL BOTÓN SUPERIOR FIJO Y LLAMATIVO --- */
+.back-button {
+    position: fixed; 
+    top: 15px;
+    left: 50%; /* Centrado horizontalmente */
+    transform: translateX(-50%); /* Ajuste para centrar */
+    z-index: 1000; 
+    background-color: #333; /* Color de base (Negro Motorizado) */
+    color: #FFC107; /* Color de impacto (Amarillo de Seguridad) */
+    padding: 10px 20px; 
+    border: 2px solid #FFC107; /* Borde de seguridad */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em; 
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.2s ease, transform 0.1s;
+}
+.back-button:hover {
+    background-color: #555;
+    transform: translateX(-50%) scale(1.02);
+}
+/* Media query para pantallas grandes */
+@media (min-width: 600px) {
+    .back-button {
+        top: 20px;
+        padding: 12px 25px;
+        font-size: 1em;
+    }
+}
+        
     </style>
 </head>
 <body>
+    <button class="back-button" onclick="window.location.href='https://rmns82839-rgb.github.io/portal-de-toma-de-muestras/'">
+    VOLVER AL PORTAL PRINCIPAL
+</button>
 
     <div id="container">
         <h1>Motorizados Lab 🧪</h1>
@@ -369,4 +404,5 @@
     </script>
 
 </body>
+
 </html>
