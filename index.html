@@ -17,7 +17,6 @@
             width: 100%;
             max-width: 900px; 
             margin: auto;
-            margin-top: 60px;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -152,43 +151,9 @@
                 font-size: 1.1em;
             }
         }
-        /* --- ESTILOS DEL BOTÓN SUPERIOR FIJO Y LLAMATIVO --- */
-.back-button {
-    position: fixed; 
-    top: 15px;
-    left: 50%; /* Centrado horizontalmente */
-    transform: translateX(-50%); /* Ajuste para centrar */
-    z-index: 1000; 
-    background-color: #333; /* Color de base (Negro Motorizado) */
-    color: #FFC107; /* Color de impacto (Amarillo de Seguridad) */
-    padding: 10px 20px; 
-    border: 2px solid #FFC107; /* Borde de seguridad */
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em; 
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    transition: background-color 0.2s ease, transform 0.1s;
-}
-.back-button:hover {
-    background-color: #555;
-    transform: translateX(-50%) scale(1.02);
-}
-/* Media query para pantallas grandes */
-@media (min-width: 600px) {
-    .back-button {
-        top: 20px;
-        padding: 12px 25px;
-        font-size: 1em;
-    }
-}
-        
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="window.location.href='https://rmns82839-rgb.github.io/portal-de-toma-de-muestras/'">
-    VOLVER AL PORTAL PRINCIPAL
-</button>
 
     <div id="container">
         <h1>Motorizados Lab 🧪</h1>
@@ -208,7 +173,26 @@
 
     <script>
         const STORAGE_KEY = 'csv_data_motorizado'; 
+        
+        // ***************************************************
+        // FUNCIÓN RECEPTORA GLOBAL
+        // El nombre debe coincidir con el llamado en la App de Rutas.
+        // ***************************************************
+        window.loadDataAppInicio = function(csvData) {
+            const outputList = document.getElementById('outputList');
+            const statusElement = document.getElementById('status');
+            
+            outputList.innerHTML = ''; 
+            statusElement.textContent = "Datos recibidos de la aplicación principal. Procesando...";
 
+            const processedData = processData(csvData);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(processedData));
+            renderData(processedData, csvData.length);
+            
+            statusElement.textContent = `Datos de ${csvData.length} filas cargados y sincronizados desde otra aplicación.`;
+        };
+        // ***************************************************
+        
         document.addEventListener('DOMContentLoaded', () => {
             const fileInput = document.getElementById('csvFile');
             const outputList = document.getElementById('outputList');
@@ -237,10 +221,21 @@
                             if (results.errors.length > 0) {
                                 console.warn("Errores de PapaParse:", results.errors);
                             }
-                            statusElement.textContent = "Datos cargados exitosamente. Procesando y guardando...";
+                            
+                            // 1. Lógica de procesamiento local para esta aplicación (Inicio)
                             const processedData = processData(results.data);
                             localStorage.setItem(STORAGE_KEY, JSON.stringify(processedData));
                             renderData(processedData, results.data.length);
+                            statusElement.textContent = "Datos cargados exitosamente. Procesando y guardando...";
+
+                            // 2. >>> IMPLEMENTACIÓN DE DISTRIBUCIÓN <<<
+                            // Llama a la función global para que otras apps reciban los datos
+                            if (typeof window.distributeParsedData === 'function') {
+                                window.distributeParsedData(results.data);
+                                console.log('Datos CSV distribuidos a otras aplicaciones.');
+                            } else {
+                                console.warn('Función global de distribución (window.distributeParsedData) no encontrada. La carga es solo local.');
+                            }
                         },
                         error: function(error) {
                             statusElement.textContent = `Error al analizar el archivo: ${error.message}`;
@@ -404,5 +399,4 @@
     </script>
 
 </body>
-
 </html>
